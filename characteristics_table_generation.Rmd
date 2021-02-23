@@ -2,24 +2,34 @@
 title: "characteristics_table_generation"
 author: "Cirun"
 date: "2/23/2021"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Tutorial:
+https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html
+
 ```{r}
 library(data.table)
 library(openxlsx)
 library(table1)
+# install.packages("table1")
+```
+
+change it here
+```{r}
 setwd("/Users/cirun/Desktop/TDS_Project_Group5")
 ```
 
-https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html
 
 ```{r}
 mydata=data.frame(fread("ukb26390_test.csv"))
+biomakers = data.frame(fread("ukb27725_test.csv"))
 mycoding=read.csv("Codings_Showcase.csv")
 ```
 
@@ -34,10 +44,6 @@ get_coding <- function(code) {
 
 ### Demographics
 ```{r}
-
-#coding_has_breast_cancer_screening = get_coding(100349)
-#breast_cancer_screening = factor(mydata$X2674.0.0, levels=coding_has_breast_cancer_screening$Value, labels = coding_has_breast_cancer_screening$Meaning)
-
 coding_sex = get_coding(9)
 sex <- factor(mydata$X31.0.0, levels=coding_sex$Value,
          labels = coding_sex$Meaning)
@@ -76,7 +82,7 @@ tb2
 
 ### Health risk factors
 ```{r}
-Height <- mydata$X12144.2.0
+height <- mydata$X12144.2.0
 label(height) <- "Height"
 
 bmi <- mydata$X21001.0.0
@@ -106,4 +112,100 @@ coding_medication <- get_coding(100626)
 medication <- factor(mydata$X6153.0.0, levels=coding_medication$Value, labels = coding_medication$Meaning)
 
 tb3 <- table1(~ height + bmi + sbp + dbp + waist_circumference + hip_circumference + smoke + alcohol + medication)
+
+tb3
+```
+
+### Breast cancer related variables
+
+```{r}
+coding_breast_cancer_screening <- get_coding(100349)
+breast_cancer_screening <- factor(mydata$X2674.0.0, levels=coding_breast_cancer_screening$Value, labels = coding_breast_cancer_screening$Meaning)
+label(breast_cancer_screening) <- "Breast cancer screening"
+
+years_since_last_breast_cancer_screening <- mydata$X2684.0.0
+label(years_since_last_breast_cancer_screening) <- "Years since last breast cancer screening"
+
+coding_illnesses_of_father <- get_coding(1010)
+illnesses_of_father <- factor(mydata$X20107.0.0, levels=coding_illnesses_of_father$Value, labels = coding_illnesses_of_father$Meaning)
+label(illnesses_of_father) <- "Illnesses of father"
+
+coding_illnesses_of_mother <- get_coding(1010)
+illnesses_of_mother <- factor(mydata$X20110.0.0, levels=coding_illnesses_of_mother$Value, labels = coding_illnesses_of_mother$Meaning)
+label(illnesses_of_mother) <- "Illnesses of mother"
+
+tb4 <- table1(~ breast_cancer_screening + years_since_last_breast_cancer_screening + illnesses_of_father + illnesses_of_mother)
+
+tb4
+```
+
+### Reproductive variables
+```{r}
+menarche_age = mydata$X2714.0.0
+label(menarche_age) <- "Menarche age"
+
+menstrual_cycle = mydata$X3710.0.0
+label(menstrual_cycle) <- "Menstrual cycle"
+
+age_at_menopause = mydata$X3581.0.0
+age_at_menopause[age_at_menopause < 0] = 0
+label(age_at_menopause) <- "Menopause age"
+
+coding_had_menopause <- get_coding(100579)
+had_menopause <- factor(mydata$X2724.0.0,levels=coding_had_menopause$Value, labels=coding_had_menopause$Meaning)
+label(had_menopause) <- "Menopause status"
+
+number_of_live_births = mydata$X2734.0.0
+label(number_of_live_births) <- "Number of live births"
+
+age_at_live_births = mydata$X2754.0.0
+label(age_at_live_births) <- "Age at live births"
+
+age_at_last_births = mydata$X2764.0.0
+label(age_at_last_births) <- "Age at last births"
+
+coding_termination <- get_coding(100349)
+termination <- factor(mydata$X2774.0.0,levels=coding_termination$Value, labels=coding_termination$Meaning)
+label(termination) <- "Termination status"
+
+termination_number = mydata$X3849.0.0
+label(termination_number) <- "Number of termination"
+
+coding_oral_contraceptive <- get_coding(100349)
+oral_contraceptive <- factor(mydata$X2784.0.0,levels=coding_oral_contraceptive$Value, labels=coding_oral_contraceptive$Meaning)
+label(oral_contraceptive) <- "Oral contraceptive status"
+
+coding_hrt<- get_coding(100349)
+hrt <- factor(mydata$X2784.0.0,levels=coding_hrt$Value, labels=coding_hrt$Meaning)
+label(hrt) <- "Hormone-replacement therapy status"
+
+coding_hysterectomy <- get_coding(100599)
+hysterectomy <- factor(mydata$X3591.0.0,levels=coding_hysterectomy$Value, labels=coding_hysterectomy$Meaning)
+label(hysterectomy) <- "Ever had hysterectomy"
+
+tb5 <- table1(~ menarche_age + menstrual_cycle + age_at_menopause + had_menopause + number_of_live_births + age_at_live_births + age_at_last_births + termination + termination_number + oral_contraceptive + hrt + hysterectomy)
+
+tb5
+```
+
+### Biomakers
+```{r}
+triglycerides = biomakers$X30870.0.0
+label(triglycerides) <- "Triglycerides"
+
+glycated_haemoglobin = biomakers$X30750.0.0
+label(glycated_haemoglobin) <- "Glycated haemoglobin (HbA1c)"
+
+glucose = biomakers$X30740.0.0
+label(glucose) <- "Glucose"
+
+cholesterol = biomakers$X30760.0.0
+label(cholesterol) <- "HDL cholesterol"
+
+oestradiol = biomakers$X30800.0.0
+label(oestradiol) <- "Oestradiol"
+
+tb6 <- table1(~ triglycerides + glycated_haemoglobin + glucose + cholesterol + oestradiol)
+
+tb6
 ```

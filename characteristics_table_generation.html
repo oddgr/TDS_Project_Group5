@@ -379,6 +379,7 @@ summary {
 </div>
 
 
+<p>Tutorial: <a href="https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html" class="uri">https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html</a></p>
 <pre class="r"><code>library(data.table)
 library(openxlsx)
 library(table1)</code></pre>
@@ -387,22 +388,21 @@ library(table1)</code></pre>
 <pre><code>## The following objects are masked from &#39;package:base&#39;:
 ## 
 ##     units, units&lt;-</code></pre>
+<pre class="r"><code># install.packages(&quot;table1&quot;)</code></pre>
+<p>change it here</p>
 <pre class="r"><code>setwd(&quot;/Users/cirun/Desktop/TDS_Project_Group5&quot;)</code></pre>
-<p><a href="https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html" class="uri">https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html</a></p>
 <pre class="r"><code>mydata=data.frame(fread(&quot;ukb26390_test.csv&quot;))
+biomakers = data.frame(fread(&quot;ukb27725_test.csv&quot;))
 mycoding=read.csv(&quot;Codings_Showcase.csv&quot;)</code></pre>
-<pre class="r"><code>get_coding &lt;- function(coding) {
-    mycoding_field=mycoding[which(mycoding[,1]==coding),]
+<pre class="r"><code>get_coding &lt;- function(code) {
+    mycoding_field=mycoding[which(mycoding[,1]==code),]
     mycoding_field=mycoding_field[,-1]
     rownames(mycoding_field)=mycoding_field[,1]
     return(mycoding_field)
 }</code></pre>
 <div id="demographics" class="section level3">
 <h3>Demographics</h3>
-<pre class="r"><code>#coding_has_breast_cancer_screening = get_coding(100349)
-#breast_cancer_screening = factor(mydata$X2674.0.0, levels=coding_has_breast_cancer_screening$Value, labels = coding_has_breast_cancer_screening$Meaning)
-
-coding_sex = get_coding(9)
+<pre class="r"><code>coding_sex = get_coding(9)
 sex &lt;- factor(mydata$X31.0.0, levels=coding_sex$Value,
          labels = coding_sex$Meaning)
 label(sex) &lt;- &quot;Sex&quot;
@@ -648,6 +648,884 @@ tb2</code></pre>
 </div>
 <div id="health-risk-factors" class="section level3">
 <h3>Health risk factors</h3>
+<pre class="r"><code>height &lt;- mydata$X12144.2.0
+label(height) &lt;- &quot;Height&quot;
+
+bmi &lt;- mydata$X21001.0.0
+label(bmi) &lt;- &quot;BMI&quot;
+
+sbp &lt;- mydata$X93.0.0
+label(sbp) &lt;- &quot;Systolic blood pressure&quot;
+
+dbp &lt;- mydata$X94.0.0
+label(dbp) &lt;- &quot;Diastolic blood pressure&quot;
+
+waist_circumference &lt;- mydata$X48.0.0
+label(waist_circumference) &lt;- &quot;Waist circumference&quot;
+
+hip_circumference &lt;- mydata$X49.0.0
+label(hip_circumference) &lt;- &quot;Hip circumference&quot;
+
+coding_smoke &lt;- get_coding(90)
+smoke &lt;- factor(mydata$X20116.0.0, levels=coding_smoke$Value, labels = coding_smoke$Meaning)
+label(smoke) &lt;- &quot;Smoking status&quot;
+
+coding_alcohol &lt;- get_coding(100402)
+alcohol &lt;- factor(mydata$X1558.0.0, levels=coding_alcohol$Value, labels = coding_alcohol$Meaning)
+label(alcohol) &lt;- &quot;Alcohol intake frequency&quot;
+
+coding_medication &lt;- get_coding(100626)
+medication &lt;- factor(mydata$X6153.0.0, levels=coding_medication$Value, labels = coding_medication$Meaning)
+
+tb3 &lt;- table1(~ height + bmi + sbp + dbp + waist_circumference + hip_circumference + smoke + alcohol + medication)
+
+tb3</code></pre>
+<div class="Rtable1"><table class="Rtable1">
+<thead>
+<tr>
+<th class='rowlabel firstrow lastrow'></th>
+<th class='firstrow lastrow'><span class='stratlabel'>Overall<br><span class='stratn'>(N=1499)</span></span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Height</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>172 (9.41)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>173 [152, 189]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>1405 (93.7%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>BMI</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>27.4 (4.84)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>26.8 [12.8, 48.2]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>12 (0.8%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Systolic blood pressure</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>139 (17.0)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>137 [115, 181]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>1398 (93.3%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Diastolic blood pressure</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>82.8 (10.5)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>83.0 [61.0, 118]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>1398 (93.3%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Waist circumference</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>89.9 (13.4)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>89.0 [60.0, 137]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>8 (0.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Hip circumference</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>103 (9.43)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>102 [81.0, 154]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>8 (0.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Smoking status</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Prefer not to answer</td>
+<td>12 (0.8%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Never</td>
+<td>847 (56.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Previous</td>
+<td>498 (33.2%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Current</td>
+<td>140 (9.3%)</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>2 (0.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Alcohol intake frequency</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Prefer not to answer</td>
+<td>3 (0.2%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Daily or almost daily</td>
+<td>295 (19.7%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Three or four times a week</td>
+<td>354 (23.6%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Once or twice a week</td>
+<td>370 (24.7%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>One to three times a month</td>
+<td>170 (11.3%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Special occasions only</td>
+<td>183 (12.2%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Never</td>
+<td>122 (8.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>2 (0.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>medication</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Do not know</td>
+<td>2 (0.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Prefer not to answer</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>None of the above</td>
+<td>552 (36.8%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Cholesterol lowering medication</td>
+<td>98 (6.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Blood pressure medication</td>
+<td>97 (6.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Insulin</td>
+<td>1 (0.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Hormone replacement therapy</td>
+<td>47 (3.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Oral contraceptive pill or minipill</td>
+<td>25 (1.7%)</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>677 (45.2%)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="breast-cancer-related-variables" class="section level3">
+<h3>Breast cancer related variables</h3>
+<pre class="r"><code>coding_breast_cancer_screening &lt;- get_coding(100349)
+breast_cancer_screening &lt;- factor(mydata$X2674.0.0, levels=coding_breast_cancer_screening$Value, labels = coding_breast_cancer_screening$Meaning)
+label(breast_cancer_screening) &lt;- &quot;Breast cancer screening&quot;
+
+years_since_last_breast_cancer_screening &lt;- mydata$X2684.0.0
+label(years_since_last_breast_cancer_screening) &lt;- &quot;Years since last breast cancer screening&quot;
+
+coding_illnesses_of_father &lt;- get_coding(1010)
+illnesses_of_father &lt;- factor(mydata$X20107.0.0, levels=coding_illnesses_of_father$Value, labels = coding_illnesses_of_father$Meaning)
+label(illnesses_of_father) &lt;- &quot;Illnesses of father&quot;
+
+coding_illnesses_of_mother &lt;- get_coding(1010)
+illnesses_of_mother &lt;- factor(mydata$X20110.0.0, levels=coding_illnesses_of_mother$Value, labels = coding_illnesses_of_mother$Meaning)
+label(illnesses_of_mother) &lt;- &quot;Illnesses of mother&quot;
+
+tb4 &lt;- table1(~ breast_cancer_screening + years_since_last_breast_cancer_screening + illnesses_of_father + illnesses_of_mother)
+
+tb4</code></pre>
+<div class="Rtable1"><table class="Rtable1">
+<thead>
+<tr>
+<th class='rowlabel firstrow lastrow'></th>
+<th class='firstrow lastrow'><span class='stratlabel'>Overall<br><span class='stratn'>(N=1499)</span></span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Breast cancer screening</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Do not know</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Prefer not to answer</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>No</td>
+<td>189 (12.6%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Yes</td>
+<td>643 (42.9%)</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>667 (44.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Years since last breast cancer screening</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>-0.728 (5.29)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>1.00 [-10.0, 16.0]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>856 (57.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Illnesses of father</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Do not know (group 1)</td>
+<td>83 (5.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Prefer not to answer (group 1)</td>
+<td>3 (0.2%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>None of the above (group 1)</td>
+<td>336 (22.4%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Do not know (group 2)</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Prefer not to answer (group 2)</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>None of the above (group 2)</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Heart disease</td>
+<td>179 (11.9%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Alzheimer's disease/dementia</td>
+<td>67 (4.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Parkinson's disease</td>
+<td>27 (1.8%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Severe depression</td>
+<td>38 (2.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Prostate cancer</td>
+<td>101 (6.7%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Stroke</td>
+<td>88 (5.9%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Lung cancer</td>
+<td>83 (5.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Bowel cancer</td>
+<td>61 (4.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Breast cancer</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Chronic bronchitis/emphysema</td>
+<td>86 (5.7%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>High blood pressure</td>
+<td>204 (13.6%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Diabetes</td>
+<td>107 (7.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>36 (2.4%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Illnesses of mother</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Do not know (group 1)</td>
+<td>57 (3.8%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Prefer not to answer (group 1)</td>
+<td>2 (0.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>None of the above (group 1)</td>
+<td>416 (27.8%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Do not know (group 2)</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Prefer not to answer (group 2)</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>None of the above (group 2)</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Heart disease</td>
+<td>115 (7.7%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Alzheimer's disease/dementia</td>
+<td>104 (6.9%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Parkinson's disease</td>
+<td>18 (1.2%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Severe depression</td>
+<td>94 (6.3%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Prostate cancer</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Stroke</td>
+<td>62 (4.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Lung cancer</td>
+<td>34 (2.3%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Bowel cancer</td>
+<td>50 (3.3%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Breast cancer</td>
+<td>67 (4.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Chronic bronchitis/emphysema</td>
+<td>41 (2.7%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>High blood pressure</td>
+<td>301 (20.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Diabetes</td>
+<td>116 (7.7%)</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>22 (1.5%)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="reproductive-variables" class="section level3">
+<h3>Reproductive variables</h3>
+<pre class="r"><code>menarche_age = mydata$X2714.0.0
+label(menarche_age) &lt;- &quot;Menarche age&quot;
+
+menstrual_cycle = mydata$X3710.0.0
+label(menstrual_cycle) &lt;- &quot;Menstrual cycle&quot;
+
+age_at_menopause = mydata$X3581.0.0
+age_at_menopause[age_at_menopause &lt; 0] = 0
+label(age_at_menopause) &lt;- &quot;Menopause age&quot;
+
+coding_had_menopause &lt;- get_coding(100579)
+had_menopause &lt;- factor(mydata$X2724.0.0,levels=coding_had_menopause$Value, labels=coding_had_menopause$Meaning)
+label(had_menopause) &lt;- &quot;Menopause status&quot;
+
+number_of_live_births = mydata$X2734.0.0
+label(number_of_live_births) &lt;- &quot;Number of live births&quot;
+
+age_at_live_births = mydata$X2754.0.0
+label(age_at_live_births) &lt;- &quot;Age at live births&quot;
+
+age_at_last_births = mydata$X2764.0.0
+label(age_at_last_births) &lt;- &quot;Age at last births&quot;
+
+coding_termination &lt;- get_coding(100349)
+termination &lt;- factor(mydata$X2774.0.0,levels=coding_termination$Value, labels=coding_termination$Meaning)
+label(termination) &lt;- &quot;Termination status&quot;
+
+termination_number = mydata$X3849.0.0
+label(termination_number) &lt;- &quot;Number of termination&quot;
+
+coding_oral_contraceptive &lt;- get_coding(100349)
+oral_contraceptive &lt;- factor(mydata$X2784.0.0,levels=coding_oral_contraceptive$Value, labels=coding_oral_contraceptive$Meaning)
+label(oral_contraceptive) &lt;- &quot;Oral contraceptive status&quot;
+
+coding_hrt&lt;- get_coding(100349)
+hrt &lt;- factor(mydata$X2784.0.0,levels=coding_hrt$Value, labels=coding_hrt$Meaning)
+label(hrt) &lt;- &quot;Hormone-replacement therapy status&quot;
+
+coding_hysterectomy &lt;- get_coding(100599)
+hysterectomy &lt;- factor(mydata$X3591.0.0,levels=coding_hysterectomy$Value, labels=coding_hysterectomy$Meaning)
+label(hysterectomy) &lt;- &quot;Ever had hysterectomy&quot;
+
+tb5 &lt;- table1(~ menarche_age + menstrual_cycle + age_at_menopause + had_menopause + number_of_live_births + age_at_live_births + age_at_last_births + termination + termination_number + oral_contraceptive + hrt + hysterectomy)
+
+tb5</code></pre>
+<div class="Rtable1"><table class="Rtable1">
+<thead>
+<tr>
+<th class='rowlabel firstrow lastrow'></th>
+<th class='firstrow lastrow'><span class='stratlabel'>Overall<br><span class='stratn'>(N=1499)</span></span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Menarche age</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>12.5 (2.78)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>13.0 [-3.00, 18.0]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>667 (44.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Menstrual cycle</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>18.0 (14.3)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>25.0 [-6.00, 42.0]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>1284 (85.7%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Menopause age</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>47.5 (11.9)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>50.0 [0, 61.0]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>1010 (67.4%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Menopause status</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Prefer not to answer</td>
+<td>1 (0.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>No</td>
+<td>215 (14.3%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Yes</td>
+<td>489 (32.6%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Not sure - had a hysterectomy</td>
+<td>92 (6.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Not sure - other reason</td>
+<td>35 (2.3%)</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>667 (44.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Number of live births</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>1.83 (1.24)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>2.00 [-3.00, 12.0]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>667 (44.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Age at live births</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>25.5 (5.13)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>25.0 [-4.00, 45.0]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>937 (62.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Age at last births</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>30.6 (5.27)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>30.0 [-4.00, 45.0]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>937 (62.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Termination status</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Do not know</td>
+<td>5 (0.3%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Prefer not to answer</td>
+<td>3 (0.2%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>No</td>
+<td>559 (37.3%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Yes</td>
+<td>265 (17.7%)</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>667 (44.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Number of termination</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>0.558 (0.772)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>0 [-3.00, 4.00]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>1234 (82.3%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Oral contraceptive status</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Do not know</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Prefer not to answer</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>No</td>
+<td>164 (10.9%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Yes</td>
+<td>668 (44.6%)</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>667 (44.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Hormone-replacement therapy status</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Do not know</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Prefer not to answer</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>No</td>
+<td>164 (10.9%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Yes</td>
+<td>668 (44.6%)</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>667 (44.5%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Ever had hysterectomy</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Prefer not to answer</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Not sure</td>
+<td>0 (0%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>No</td>
+<td>686 (45.8%)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Yes</td>
+<td>54 (3.6%)</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>759 (50.6%)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="biomakers" class="section level3">
+<h3>Biomakers</h3>
+<pre class="r"><code>triglycerides = biomakers$X30870.0.0
+label(triglycerides) &lt;- &quot;Triglycerides&quot;
+
+glycated_haemoglobin = biomakers$X30750.0.0
+label(glycated_haemoglobin) &lt;- &quot;Glycated haemoglobin (HbA1c)&quot;
+
+glucose = biomakers$X30740.0.0
+label(glucose) &lt;- &quot;Glucose&quot;
+
+cholesterol = biomakers$X30760.0.0
+label(cholesterol) &lt;- &quot;HDL cholesterol&quot;
+
+oestradiol = biomakers$X30800.0.0
+label(oestradiol) &lt;- &quot;Oestradiol&quot;
+
+tb6 &lt;- table1(~ triglycerides + glycated_haemoglobin + glucose + cholesterol + oestradiol)
+
+tb6</code></pre>
+<div class="Rtable1"><table class="Rtable1">
+<thead>
+<tr>
+<th class='rowlabel firstrow lastrow'></th>
+<th class='firstrow lastrow'><span class='stratlabel'>Overall<br><span class='stratn'>(N=9999)</span></span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Triglycerides</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>1.75 (1.03)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>1.47 [0.257, 9.52]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>630 (6.3%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Glycated haemoglobin (HbA1c)</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>36.1 (6.60)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>35.2 [16.0, 108]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>686 (6.9%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Glucose</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>5.11 (1.19)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>4.93 [2.37, 26.7]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>1422 (14.2%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>HDL cholesterol</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>1.45 (0.383)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>1.40 [0.530, 3.89]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>1414 (14.1%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>Oestradiol</span></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>Mean (SD)</td>
+<td>465 (408)</td>
+</tr>
+<tr>
+<td class='rowlabel'>Median [Min, Max]</td>
+<td>326 [175, 4970]</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>Missing</td>
+<td class='lastrow'>8457 (84.6%)</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
