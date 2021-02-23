@@ -1,0 +1,109 @@
+---
+title: "characteristics_table_generation"
+author: "Cirun"
+date: "2/23/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(data.table)
+library(openxlsx)
+library(table1)
+setwd("/Users/cirun/Desktop/TDS_Project_Group5")
+```
+
+https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html
+
+```{r}
+mydata=data.frame(fread("ukb26390_test.csv"))
+mycoding=read.csv("Codings_Showcase.csv")
+```
+
+```{r}
+get_coding <- function(code) {
+    mycoding_field=mycoding[which(mycoding[,1]==code),]
+    mycoding_field=mycoding_field[,-1]
+    rownames(mycoding_field)=mycoding_field[,1]
+    return(mycoding_field)
+}
+```
+
+### Demographics
+```{r}
+
+#coding_has_breast_cancer_screening = get_coding(100349)
+#breast_cancer_screening = factor(mydata$X2674.0.0, levels=coding_has_breast_cancer_screening$Value, labels = coding_has_breast_cancer_screening$Meaning)
+
+coding_sex = get_coding(9)
+sex <- factor(mydata$X31.0.0, levels=coding_sex$Value,
+         labels = coding_sex$Meaning)
+label(sex) <- "Sex"
+
+
+age_at_recuritment <- mydata$X21022.0.0
+label(age_at_recuritment) <- "Age at recuritment"
+
+age_at_attending <- mydata$X21003.0.0
+label(age_at_attending) <- "Age when attended assessment centre"
+
+coding_ethnic <-  get_coding(1001)
+ethnic <- factor(mydata$X21000.0.0, levels=coding_ethnic$Value, labels = coding_ethnic$Meaning)
+label(ethnic) <- "Ethnic"
+
+
+tb1 <- table1(~ sex + age_at_recuritment + age_at_attending + ethnic)
+
+tb1
+```
+
+### Social factors
+```{r}
+coding_qualifications <- get_coding(100305)
+qualifications <- factor(mydata$X6138.0.0, levels=coding_qualifications$Value, labels = coding_qualifications$Meaning)
+label(qualifications) <- "Qualifications"
+
+townsend_deprivation_index <- mydata$X189.0.0
+label(townsend_deprivation_index) <- "Townsend deprivation index"
+
+tb2 <- table1(~ qualifications + townsend_deprivation_index)
+
+tb2
+```
+
+### Health risk factors
+```{r}
+Height <- mydata$X12144.2.0
+label(height) <- "Height"
+
+bmi <- mydata$X21001.0.0
+label(bmi) <- "BMI"
+
+sbp <- mydata$X93.0.0
+label(sbp) <- "Systolic blood pressure"
+
+dbp <- mydata$X94.0.0
+label(dbp) <- "Diastolic blood pressure"
+
+waist_circumference <- mydata$X48.0.0
+label(waist_circumference) <- "Waist circumference"
+
+hip_circumference <- mydata$X49.0.0
+label(hip_circumference) <- "Hip circumference"
+
+coding_smoke <- get_coding(90)
+smoke <- factor(mydata$X20116.0.0, levels=coding_smoke$Value, labels = coding_smoke$Meaning)
+label(smoke) <- "Smoking status"
+
+coding_alcohol <- get_coding(100402)
+alcohol <- factor(mydata$X1558.0.0, levels=coding_alcohol$Value, labels = coding_alcohol$Meaning)
+label(alcohol) <- "Alcohol intake frequency"
+
+coding_medication <- get_coding(100626)
+medication <- factor(mydata$X6153.0.0, levels=coding_medication$Value, labels = coding_medication$Meaning)
+
+tb3 <- table1(~ height + bmi + sbp + dbp + waist_circumference + hip_circumference + smoke + alcohol + medication)
+```
