@@ -27,8 +27,7 @@ setwd("/Users/cirun/Desktop/TDS_Project_Group5")
 
 
 ```{r}
-mydata=data.frame(fread("ukb26390_jk_tarpop_test.csv"))
-biomakers = data.frame(fread("ukb27725_test.csv"))
+mydata=readRDS("0305_final_34cols_recoded.rds")
 mycoding=read.csv("Codings_Showcase.csv")
 ```
 
@@ -48,52 +47,30 @@ sex <- factor(mydata$X31.0.0, levels=coding_sex$Value,
          labels = coding_sex$Meaning)
 label(sex) <- "Sex"
 
-
 age_at_recuritment <- mydata$X21022.0.0
 label(age_at_recuritment) <- "Age at recuritment"
 
-age_at_attending <- mydata$X21003.0.0
-label(age_at_attending) <- "Age when attended assessment centre"
-
-coding_ethnic <-  get_coding(1001)
-ethnic <- factor(mydata$X21000.0.0, levels=coding_ethnic$Value, labels = coding_ethnic$Meaning)
+ethnic <- as.factor(mydata$ethnicity)
 label(ethnic) <- "Ethnic"
 
 outcome_status <- mydata$outcome_status
 outcome_status <- factor(outcome_status, labels = c("Control", "Case"))
 
-tb1 <- table1(~ sex + age_at_recuritment + age_at_attending + ethnic | outcome_status)
-
-tb1
+tb1 <- table1(~ sex + age_at_recuritment + ethnic | outcome_status)
 ```
 
 ### Social factors
 ```{r}
-coding_qualifications <- get_coding(100305)
-qualifications <- factor(mydata$X6138.0.0, levels=coding_qualifications$Value, labels = coding_qualifications$Meaning)
-label(qualifications) <- "Qualifications"
-
 townsend_deprivation_index <- mydata$X189.0.0
 label(townsend_deprivation_index) <- "Townsend deprivation index"
 
-tb2 <- table1(~ qualifications + townsend_deprivation_index)
-
-tb2
+tb2 <- table1(~ townsend_deprivation_index | outcome_status)
 ```
 
 ### Health risk factors
 ```{r}
-height <- mydata$X12144.2.0
-label(height) <- "Height"
-
 bmi <- mydata$X21001.0.0
 label(bmi) <- "BMI"
-
-sbp <- mydata$X93.0.0
-label(sbp) <- "Systolic blood pressure"
-
-dbp <- mydata$X94.0.0
-label(dbp) <- "Diastolic blood pressure"
 
 waist_circumference <- mydata$X48.0.0
 label(waist_circumference) <- "Waist circumference"
@@ -101,18 +78,14 @@ label(waist_circumference) <- "Waist circumference"
 hip_circumference <- mydata$X49.0.0
 label(hip_circumference) <- "Hip circumference"
 
-coding_smoke <- get_coding(90)
-smoke <- factor(mydata$X20116.0.0, levels=coding_smoke$Value, labels = coding_smoke$Meaning)
+smoke <- as.factor(mydata$smoking_status)
 label(smoke) <- "Smoking status"
 
-coding_alcohol <- get_coding(100402)
-alcohol <- factor(mydata$X1558.0.0, levels=coding_alcohol$Value, labels = coding_alcohol$Meaning)
+alcohol <- as.factor(mydata$alcohol_status)
 label(alcohol) <- "Alcohol intake frequency"
 
-coding_medication <- get_coding(100626)
-medication <- factor(mydata$X6153.0.0, levels=coding_medication$Value, labels = coding_medication$Meaning)
 
-tb3 <- table1(~ height + bmi + sbp + dbp + waist_circumference + hip_circumference + smoke + alcohol + medication)
+tb3 <- table1(~ bmi + waist_circumference + hip_circumference + smoke + alcohol ｜outcome_status)
 
 tb3
 ```
