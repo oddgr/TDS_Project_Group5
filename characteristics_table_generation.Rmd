@@ -28,7 +28,7 @@ setwd("/Users/cirun/Desktop/TDS_Project_Group5")
 
 
 ```{r}
-mydata=data.frame(fread("ukb26390_test.csv"))
+mydata=data.frame(fread("ukb26390_jk_tarpop_test.csv"))
 biomakers = data.frame(fread("ukb27725_test.csv"))
 mycoding=read.csv("Codings_Showcase.csv")
 ```
