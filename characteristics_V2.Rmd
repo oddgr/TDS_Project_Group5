@@ -18,6 +18,7 @@ https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html
 library(data.table)
 library(openxlsx)
 library(table1)
+library(MatchIt) 
 ```
 
 change it here
@@ -40,6 +41,28 @@ get_coding <- function(code) {
 }
 ```
 
+```{r}
+rndr <- function(x, name, ...) {
+    if (length(x) == 0) {
+        y <- mydata[[name]]
+        s <- rep("", length(render.default(x=y, name=name, ...)))
+        if (is.numeric(y)) {
+            p <- t.test(y ~ mydata$outcome_status)$p.value
+        } else {
+            p <- chisq.test(table(y,droplevels(mydata$outcome_status)))$p.value
+        }
+        s[2] <- sub("<", "&lt;", format.pval(p, digits=3, eps=0.001))
+        s
+    } else {
+        render.default(x=x, name=name, ...)
+    }
+}
+
+rndr.strat <- function(label, n, ...) {
+    ifelse(n==0, label, render.strat.default(label, n, ...))
+}
+```
+
 ### Demographics
 ```{r}
 coding_sex = get_coding(9)
@@ -54,40 +77,84 @@ ethnic <- as.factor(mydata$ethnicity)
 label(ethnic) <- "Ethnic"
 
 outcome_status <- mydata$outcome_status
-outcome_status <- factor(outcome_status, labels = c("Control", "Case"))
 
-tb1 <- table1(~ sex + age_at_recuritment + ethnic | outcome_status)
+outcome_status <- factor(outcome_status, levels = c(0, 1), labels = c("Control", "Case"))
+
+tb1 <- table1(~ sex + age_at_recuritment + ethnic| outcome_status)
+# , data = mydata,render=rndr, render.strat=rndr.strat
+```
+
+### Demographics with p-values
+```{r}
+mydata=readRDS("0305_final_34cols_recoded.rds")
+coding_sex = get_coding(9)
+sex <- factor(mydata$X31.0.0, levels=coding_sex$Value,
+         labels = coding_sex$Meaning)
+label(sex) <- "Sex"
+mydata$sex = sex
+
+age_at_recuritment <- mydata$X21022.0.0
+label(age_at_recuritment) <- "Age at recuritment"
+mydata$age_at_recuritment <- age_at_recuritment
+
+ethnic <- as.factor(mydata$ethnicity)
+label(ethnic) <- "Ethnic"
+mydata$ethnic <- ethnic
+
+mydata$outcome_status <- factor(mydata$outcome_status, levels = c(0, 1, 2), labels = c("Control", "Case", "P-value"))
+
+tb1 <- table1(~ sex + age_at_recuritment + ethnic | outcome_status, data = mydata, droplevels = F, render=rndr, render.strat=rndr.strat)
 ```
 
 ### Social factors
 ```{r}
 townsend_deprivation_index <- mydata$X189.0.0
 label(townsend_deprivation_index) <- "Townsend deprivation index"
-
-tb2 <- table1(~ townsend_deprivation_index | outcome_status)
+mydata$townsend_deprivation_index <- townsend_deprivation_index
 ```
 
 ### Health risk factors
 ```{r}
 bmi <- mydata$X21001.0.0
 label(bmi) <- "BMI"
+mydata$bmi <- bmi
 
 waist_circumference <- mydata$X48.0.0
 label(waist_circumference) <- "Waist circumference"
+mydata$waist_circumference <- waist_circumference
 
 hip_circumference <- mydata$X49.0.0
 label(hip_circumference) <- "Hip circumference"
+mydata$hip_circumference <- hip_circumference
 
 smoke <- as.factor(mydata$smoking_status)
 label(smoke) <- "Smoking status"
+mydata$smoke <- smoke
 
 alcohol <- as.factor(mydata$alcohol_status)
 label(alcohol) <- "Alcohol intake frequency"
+mydata$alcohol <- alcohol
 
+active_days <- mydata$active_days
+label(active_days) <- "Physical active days"
+mydata$active_days <- active_days
 
-tb3 <- table1(~ bmi + waist_circumference + hip_circumference + smoke + alcohol ｜outcome_status)
+Cardiovascular <- factor(mydata$Cardiovascular,labels = c("No", "Yes"))
+label(Cardiovascular) <- "Cardiovascular disease"
+mydata$Cardiovascular <- Cardiovascular
 
-tb3
+Hypertension <- factor(mydata$Hypertension,labels = c("No", "Yes"))
+label(Hypertension) <- "Hypertension"
+mydata$Hypertension <- Hypertension
+
+Diabetes <- factor(mydata$Diabetes,labels = c("No", "Yes"))
+label(Diabetes) <- "Diabetes"
+mydata$Diabetes <- Diabetes
+
+Respiratory <- factor(mydata$Respiratory,labels = c("No", "Yes"))
+label(Respiratory) <- "Respiratory disease"
+mydata$Respiratory <- Respiratory
+#tb3 <- table1(~ bmi + waist_circumference + hip_circumference + smoke + alcohol | outcome_status)
 ```
 
 ### Breast cancer related variables
@@ -96,70 +163,46 @@ tb3
 coding_breast_cancer_screening <- get_coding(100349)
 breast_cancer_screening <- factor(mydata$X2674.0.0, levels=coding_breast_cancer_screening$Value, labels = coding_breast_cancer_screening$Meaning)
 label(breast_cancer_screening) <- "Breast cancer screening"
+mydata$breast_cancer_screening <- breast_cancer_screening
 
-years_since_last_breast_cancer_screening <- mydata$X2684.0.0
-label(years_since_last_breast_cancer_screening) <- "Years since last breast cancer screening"
-
-coding_illnesses_of_father <- get_coding(1010)
-illnesses_of_father <- factor(mydata$X20107.0.0, levels=coding_illnesses_of_father$Value, labels = coding_illnesses_of_father$Meaning)
-label(illnesses_of_father) <- "Illnesses of father"
-
-coding_illnesses_of_mother <- get_coding(1010)
-illnesses_of_mother <- factor(mydata$X20110.0.0, levels=coding_illnesses_of_mother$Value, labels = coding_illnesses_of_mother$Meaning)
-label(illnesses_of_mother) <- "Illnesses of mother"
-
-tb4 <- table1(~ breast_cancer_screening + years_since_last_breast_cancer_screening + illnesses_of_father + illnesses_of_mother)
-
-tb4
+#tb4 <- table1(~ breast_cancer_screening | outcome_status)
 ```
 
 ### Reproductive variables
 ```{r}
-menarche_age = mydata$X2714.0.0
+menarche_age = as.double(mydata$menarche_age)
 label(menarche_age) <- "Menarche age"
-
-menstrual_cycle = mydata$X3710.0.0
-label(menstrual_cycle) <- "Menstrual cycle"
-
-age_at_menopause = mydata$X3581.0.0
-age_at_menopause[age_at_menopause < 0] = 0
-label(age_at_menopause) <- "Menopause age"
-
+mydata$menarche_age <- menarche_age
+  
 coding_had_menopause <- get_coding(100579)
 had_menopause <- factor(mydata$X2724.0.0,levels=coding_had_menopause$Value, labels=coding_had_menopause$Meaning)
 label(had_menopause) <- "Menopause status"
+mydata$had_menopause <- had_menopause
 
 number_of_live_births = mydata$X2734.0.0
 label(number_of_live_births) <- "Number of live births"
+mydata$number_of_live_births <- number_of_live_births
 
-age_at_live_births = mydata$X2754.0.0
-label(age_at_live_births) <- "Age at live births"
-
-age_at_last_births = mydata$X2764.0.0
-label(age_at_last_births) <- "Age at last births"
+ever_have_birth <- as.factor(mydata$ever_had_birth)
+label(ever_have_birth) <- "Birth status"
+mydata$ever_have_birth <- ever_have_birth
 
 coding_termination <- get_coding(100349)
 termination <- factor(mydata$X2774.0.0,levels=coding_termination$Value, labels=coding_termination$Meaning)
 label(termination) <- "Termination status"
-
-termination_number = mydata$X3849.0.0
-label(termination_number) <- "Number of termination"
+mydata$termination <- termination
 
 coding_oral_contraceptive <- get_coding(100349)
 oral_contraceptive <- factor(mydata$X2784.0.0,levels=coding_oral_contraceptive$Value, labels=coding_oral_contraceptive$Meaning)
 label(oral_contraceptive) <- "Oral contraceptive status"
+mydata$oral_contraceptive <- oral_contraceptive
 
 coding_hrt<- get_coding(100349)
 hrt <- factor(mydata$X2784.0.0,levels=coding_hrt$Value, labels=coding_hrt$Meaning)
 label(hrt) <- "Hormone-replacement therapy status"
+mydata$hrt <- hrt
 
-coding_hysterectomy <- get_coding(100599)
-hysterectomy <- factor(mydata$X3591.0.0,levels=coding_hysterectomy$Value, labels=coding_hysterectomy$Meaning)
-label(hysterectomy) <- "Ever had hysterectomy"
-
-tb5 <- table1(~ menarche_age + menstrual_cycle + age_at_menopause + had_menopause + number_of_live_births + age_at_live_births + age_at_last_births + termination + termination_number + oral_contraceptive + hrt + hysterectomy)
-
-tb5
+#tb5 <- table1(~ menarche_age  + had_menopause + number_of_live_births + ever_have_birth + termination + oral_contraceptive + hrt | outcome_status)
 ```
 
 ### Biomakers
@@ -182,4 +225,14 @@ label(oestradiol) <- "Oestradiol"
 tb6 <- table1(~ triglycerides + glycated_haemoglobin + glucose + cholesterol + oestradiol)
 
 tb6
+```
+
+Full table
+```{r}
+tb_full <- table1(~ sex + age_at_recuritment + ethnic + townsend_deprivation_index + bmi + waist_circumference + hip_circumference + smoke + alcohol + breast_cancer_screening + menarche_age  + had_menopause + number_of_live_births + ever_have_birth + termination + oral_contraceptive + hrt| outcome_status)
+```
+
+Full table with P-Value
+```{r}
+tb_full <- table1(~ sex + age_at_recuritment + ethnic + bmi + waist_circumference + hip_circumference + smoke + alcohol+ active_days + Cardiovascular + Diabetes + Hypertension + Respiratory + breast_cancer_screening + menarche_age  + had_menopause + number_of_live_births + ever_have_birth + termination + oral_contraceptive + hrt| outcome_status, data = mydata, droplevels = F, render=rndr, render.strat=rndr.strat)
 ```
